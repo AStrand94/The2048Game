@@ -7,6 +7,7 @@ import java.util.Arrays;
 public class Game {
 
     int[][] board = new int[4][4];
+    boolean changed = false;
 
     public Game(){
         initGame();
@@ -51,7 +52,7 @@ public class Game {
                 return;
         }
 
-        addNewCell();
+        if (changed) addNewCell();
     }
 
     private void addNewCell(){
@@ -71,6 +72,7 @@ public class Game {
             }
 
         }
+        resetChanged();
 
 
     }
@@ -97,86 +99,141 @@ public class Game {
 
     }
 
-    private void moveUp(){
-        for (int i = board.length-2; i >= 0; i--){
-            for (int j = board[0].length - 1; j >= 0; j--) {
-                if (board[j][i] == 0){
-                    board[j][i] = board[j][i+1];
-                    board[j][i+1] = 0;
-                }else if (board[j][i+1] != 0 && board[j][i+1] == board[j][i]) {
-                    board[j][i] += board[j][i + 1];
-                    board[j][i + 1] = 0;
-                    j--;
+    private void moveLeft(){
+        for (int x = 0; x < board.length; x++){
+            pushLeft(x);
+            for (int y = 0; y < board.length-1; y++){
+                if (board[x][y] == 0){
+                    pushLeft(x);
+                }else if (board[x][y] == board[x][y+1]){
+                    board[x][y] += board[x][y+1];
+                    board[x][y+1] = 0;
+                    pushLeft(x);
                 }
             }
         }
-        System.out.println(toString());
+    }
+
+
+    private void moveRight(){
+        for (int x = board.length-1; x >= 0; x--){
+            pushRight(x);
+            for (int y = board.length-1; y > 0; y--){
+                if (board[x][y] == 0){
+                    pushRight(x);
+                }else if (board[x][y] == board[x][y-1]){
+                    board[x][y] += board[x][y-1];
+                    board[x][y-1] = 0;
+                    pushRight(x);
+                }
+            }
+        }
+
     }
 
     private void moveDown(){
-        for (int i = 1; i < board.length; i++){
-            for (int j = 0; j < board[0].length; j++) {
-                if (board[j][i] == 0){
-                    board[j][i] = board[j][i-1];
-                    board[j][i-1] = 0;
-                }else if (board[j][i-1] != 0 && board[j][i-1] == board[j][i]){
-                    board[j][i] += board[j][i - 1];
-                    board[j][i - 1] = 0;
-                    j++;
+        for (int y = 0; y < board.length; y++){
+            pushDown(y);
+            for (int x = board.length-1; x > 0; x--){
+                if (board[x][y] == 0){
+                    pushDown(y);
+                } else if (board[x-1][y] == board[x][y]) {
+                    board[x][y] += board[x-1][y];
+                    board[x-1][y] = 0;
+                    pushDown(y);
                 }
             }
         }
-        System.out.println(toString());
     }
 
-    private void moveRight(){
-        for (int i = 0; i < board.length; i++){
-            for (int j = 1; j < board.length; j++){
-                if (board[j][i] == 0){
-                    board[j][i] = board[j-1][i];
-                    board[j-1][i] = 0;
-                }else if (board[j-1][i] != 0 && board[j-1][i] == board[j][i]){
-                    board[j][i] += board[j-1][i];
-                    board[j-1][i] = 0;
-                    //j++; //bør kanskje ikke kommenteres ut??
+
+    private void moveUp(){
+        for (int y = 0; y < board.length; y++){
+            pushUp(y);
+            for (int x = 0; x < board.length-1; x++){
+                if (board[x][y] == 0){
+                    pushUp(y);
+                }else if (board[x+1][y] == board[x][y]){
+                    board[x][y] += board[x+1][y];
+                    board[x+1][y] = 0;
+                    pushUp(y);
                 }
             }
         }
-        System.out.println(toString());
-
     }
 
-    private void moveLeft(){
-        for (int i = board.length-1; i >= 0; i--){
-            for (int j = board.length-2; j >= 0; j--){
-                if (board[j][i] == 0){
-                    board[j][i] = board[j+1][i];
-                    board[j+1][i] = 0;
-                }else if (board[j+1][i] != 0 && board[j+1][i] == board[j][i]){
-                    board[j][i] += board[j+1][i];
-                    board[j+1][i] = 0;
-                    j++;
+    private void pushRight(int x){
+        hasChanged();
+        for (int y = board.length-2; y >= 0; y--){
+            if (board[x][y] != 0 && board[x][y+1] == 0){
+                int i = y;
+                while (i < board.length-1 && board[x][i+1] == 0){
+                    moveTo(x,i,x,i+1);
+                    i++;
                 }
             }
         }
-        System.out.println(toString());
     }
 
-    private void moveCellDown(int x, int y){
-        
+    private void pushLeft(int x){
+        hasChanged();
+        for (int y = 1; y < board.length; y++){
+            if (board[x][y] != 0 && board[x][y-1] == 0){
+                int i = y;
+                while (i > 0 && board[x][i-1] == 0){
+                    moveTo(x,i,x,i-1);
+                    i--;
+                }
+            }
+        }
     }
 
-    private void moveCellRight(int x, int y){
-
+    private void pushDown(int y){
+        hasChanged();
+        for (int x = board.length-2; x >= 0; x--){
+            if (board[x][y] != 0 && board[x+1][y] == 0){
+                int i = x;
+                while (i < board.length-1 && board[i+1][y] == 0){
+                    moveTo(i,y,i+1,y);
+                    i++;
+                }
+            }
+        }
     }
 
-    private void moveCellUp(int x, int y){
-
+    private void pushUp(int y){
+        hasChanged();
+        for (int x = 1; x < board.length; x++){
+            if (board[x][y] != 0 && board[x-1][y] == 0) {
+                int i = x;
+                while (i > 0 && board[i-1][y] == 0){
+                    moveTo(i,y,i-1,y);
+                    i--;
+                }
+            }
+        }
     }
 
-    private void moveCellLeft(int x, int y){
-
+    public void setBoard(int[][] board){
+        this.board = board;
     }
+    /*
+    Sets (x1,y1) = (x2,y2)
+     */
+    private void moveTo(int x1, int y1, int x2, int y2){
+        board[x2][y2] = board[x1][y1];
+        board[x1][y1] = 0;
+    }
+
+    private void hasChanged(){
+        changed = true;
+    }
+
+    private void resetChanged(){
+        changed = false;
+    }
+
+
 
     @Override
     public String toString(){

@@ -26,6 +26,9 @@ public class Controller implements Initializable {
         gc.setFill(Color.GRAY);
 
         game = new Game();
+
+        System.out.println("HEI");
+        System.out.println(game.toString());
         paintEngine = new PaintEngine(canvas.getHeight(),canvas.getWidth(),game.getBoard().length,gc);
 
         initListeners();
@@ -38,15 +41,10 @@ public class Controller implements Initializable {
         canvas.setOnKeyPressed(e -> {
             game.move(e.getCode());
             paintBoard();
-            /*if (e.getCode() == KeyCode.UP){
-                game.move(MoveCode.UP);
-            }else if (e.getCode() == KeyCode.RIGHT){
-                game.move(MoveCode.RIGHT);
-            }else if (e.getCode() == KeyCode.LEFT){
-                game.move(MoveCode.LEFT);
-            }else if (e.getCode() == KeyCode.DOWN){
-                game.move(MoveCode.DOWN);
-            }*/
+
+            //canvas.getGraphicsContext2D().fillRect(0,0,20,20);
+            //canvas.getGraphicsContext2D().fillRect(20,0,20,20);
+
         });
     }
 

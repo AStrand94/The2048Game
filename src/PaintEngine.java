@@ -31,12 +31,12 @@ public class PaintEngine {
 
     public void paintCells(int[][] board){
         int i = 1;
-        for (int x = 0; x < size; x++){
-            for (int y = 0; y < size; y++){
-                gc.setFill(getColor(board[x][y]));
+        for (int y = 0; y < size; y++){
+            for (int x = 0; x < size; x++){
+                gc.setFill(getColor(board[y][x]));
                 gc.fillRect(x*rectSize,y*rectSize,rectSize,rectSize);
                 gc.setFill(Color.BLACK);
-                gc.fillText(Integer.toString(board[x][y]),(x+1)*rectSize - rectSize/2,(y+1)*rectSize - rectSize/2);
+                gc.fillText(Integer.toString(board[y][x]),(x+1)*rectSize - rectSize/2,(y+1)*rectSize - rectSize/2);
             }
         }
     }
