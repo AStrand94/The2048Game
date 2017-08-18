@@ -1,5 +1,11 @@
+import com.sun.javaws.jnl.JavaFXAppDesc;
 import javafx.scene.input.KeyCode;
+
+import java.time.Clock;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * Created by andreasstrand on 29.04.2017.
@@ -7,7 +13,10 @@ import java.util.Arrays;
 public class Game {
 
     int[][] board = new int[4][4];
+    int[][] prevBoard;
     boolean changed = false;
+
+    int score = 0;
 
     public Game(){
         initGame();
@@ -34,7 +43,23 @@ public class Game {
         return board;
     }
 
+    private void setCopy(){
+        prevBoard = new int[4][];
+
+        for (int i = 0; i < board.length; i++)
+            prevBoard[i] = Arrays.copyOf(board[i],board.length);
+    }
+
+    /**
+     *
+     * @return true if the array has changed, false if not
+     */
+    private boolean hasChanged(){
+        return !Arrays.deepEquals(prevBoard,board);
+    }
+
     public void move(KeyCode direction){
+        setCopy();
         switch (direction){
             case DOWN:
                 moveDown();
@@ -52,7 +77,7 @@ public class Game {
                 return;
         }
 
-        if (changed) addNewCell();
+        if (hasChanged()) addNewCell();
     }
 
     private void addNewCell(){
@@ -72,7 +97,6 @@ public class Game {
             }
 
         }
-        resetChanged();
 
 
     }
@@ -88,7 +112,7 @@ public class Game {
      * Checks if the board is full
      * @return true if the board is full
      */
-    private boolean isFull(){
+    public boolean isFull(){
         int n = 0;
         for (int i = 0; i < board.length; i++){
             for (int j = 0; j < board[0].length; j++){
@@ -108,6 +132,7 @@ public class Game {
                 }else if (board[x][y] == board[x][y+1]){
                     board[x][y] += board[x][y+1];
                     board[x][y+1] = 0;
+                    score += board[x][y];
                     pushLeft(x);
                 }
             }
@@ -124,6 +149,7 @@ public class Game {
                 }else if (board[x][y] == board[x][y-1]){
                     board[x][y] += board[x][y-1];
                     board[x][y-1] = 0;
+                    score += board[x][y];
                     pushRight(x);
                 }
             }
@@ -140,10 +166,12 @@ public class Game {
                 } else if (board[x-1][y] == board[x][y]) {
                     board[x][y] += board[x-1][y];
                     board[x-1][y] = 0;
+                    score += board[x][y];
                     pushDown(y);
                 }
             }
         }
+
     }
 
 
@@ -156,6 +184,7 @@ public class Game {
                 }else if (board[x+1][y] == board[x][y]){
                     board[x][y] += board[x+1][y];
                     board[x+1][y] = 0;
+                    score += board[x][y];
                     pushUp(y);
                 }
             }
@@ -163,7 +192,6 @@ public class Game {
     }
 
     private void pushRight(int x){
-        hasChanged();
         for (int y = board.length-2; y >= 0; y--){
             if (board[x][y] != 0 && board[x][y+1] == 0){
                 int i = y;
@@ -176,7 +204,6 @@ public class Game {
     }
 
     private void pushLeft(int x){
-        hasChanged();
         for (int y = 1; y < board.length; y++){
             if (board[x][y] != 0 && board[x][y-1] == 0){
                 int i = y;
@@ -189,7 +216,6 @@ public class Game {
     }
 
     private void pushDown(int y){
-        hasChanged();
         for (int x = board.length-2; x >= 0; x--){
             if (board[x][y] != 0 && board[x+1][y] == 0){
                 int i = x;
@@ -202,7 +228,6 @@ public class Game {
     }
 
     private void pushUp(int y){
-        hasChanged();
         for (int x = 1; x < board.length; x++){
             if (board[x][y] != 0 && board[x-1][y] == 0) {
                 int i = x;
@@ -214,9 +239,14 @@ public class Game {
         }
     }
 
+    public int getScore(){
+        return score;
+    }
+
     public void setBoard(int[][] board){
         this.board = board;
     }
+
     /*
     Sets (x1,y1) = (x2,y2)
      */
@@ -224,16 +254,6 @@ public class Game {
         board[x2][y2] = board[x1][y1];
         board[x1][y1] = 0;
     }
-
-    private void hasChanged(){
-        changed = true;
-    }
-
-    private void resetChanged(){
-        changed = false;
-    }
-
-
 
     @Override
     public String toString(){

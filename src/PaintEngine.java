@@ -56,7 +56,7 @@ public class PaintEngine {
             case 8:
                 return Color.GREEN;
             case 16:
-                return Color.RED;
+                return Color.ORANGERED;
             case 32:
                 return Color.RED;
             case 64:
@@ -70,9 +70,5 @@ public class PaintEngine {
             default:
                 return Color.BEIGE;
         }
-
-
     }
-
-
 }
